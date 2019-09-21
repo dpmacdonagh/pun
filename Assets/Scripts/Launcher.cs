@@ -22,6 +22,7 @@ namespace Com.PunTutorial {
     #region Private Fields
     
     string gameVersion = "1";
+    bool isConnecting;
     
     #endregion
     
@@ -41,6 +42,7 @@ namespace Com.PunTutorial {
     #region Public Methods
     
     public void Connect() {
+      isConnecting = true;
       progressLabel.SetActive(true);
       controlPanel.SetActive(false);
 
@@ -57,7 +59,10 @@ namespace Com.PunTutorial {
     #region MonoBehaviourPunCallbacks Callbacks
     public override void OnConnectedToMaster() {
       Debug.Log("OnConnectedToMaster was called by Pun");
-      PhotonNetwork.JoinRandomRoom();
+      
+      if (isConnecting) {
+        PhotonNetwork.JoinRandomRoom();
+      }
     }
 
     public override void OnDisconnected(DisconnectCause cause) {
@@ -73,6 +78,11 @@ namespace Com.PunTutorial {
 
     public override void OnJoinedRoom() {
       Debug.Log("OnJoinedRoom() called by PUN. Client is in a room");
+
+      if (PhotonNetwork.CurrentRoom.PlayerCount ==1) {
+        Debug.Log("We are the first player, load 'Room for 1'");
+        PhotonNetwork.LoadLevel("Room for 1");
+      }
     }
 
     #endregion
